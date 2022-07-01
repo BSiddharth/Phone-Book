@@ -35,6 +35,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
+  editContact(
+      {required int index, required String name, required String number}) {
+    contactList[index] = {'name': name, 'phoneNumber': number};
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -181,6 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: ContactBox(
               contactList: contactList,
               deleteContact: deleteContact,
+              editContact: editContact,
             )),
           ],
         ),
@@ -192,9 +199,13 @@ class _MyHomePageState extends State<MyHomePage> {
 class ContactBox extends StatefulWidget {
   final List contactList;
   final Function deleteContact;
-  const ContactBox(
-      {Key? key, required this.contactList, required this.deleteContact})
-      : super(key: key);
+  final Function editContact;
+  const ContactBox({
+    Key? key,
+    required this.contactList,
+    required this.deleteContact,
+    required this.editContact,
+  }) : super(key: key);
 
   @override
   State<ContactBox> createState() => _ContactBoxState();
@@ -222,6 +233,7 @@ class _ContactBoxState extends State<ContactBox> {
                     isLast: index == widget.contactList.length - 1,
                     index: index,
                     deleteContact: widget.deleteContact,
+                    editContact: widget.editContact,
                   );
                 }),
             //  Column(
@@ -239,8 +251,13 @@ class ContactCard extends StatelessWidget {
   final bool isFirst;
   final bool isLast;
   final Function deleteContact;
+  final Function editContact;
   final int index;
-  const ContactCard({
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController numberController = TextEditingController();
+
+  ContactCard({
     Key? key,
     required this.name,
     required this.phoneNumber,
@@ -248,6 +265,7 @@ class ContactCard extends StatelessWidget {
     required this.isLast,
     required this.index,
     required this.deleteContact,
+    required this.editContact,
   }) : super(key: key);
 
   @override
@@ -307,15 +325,88 @@ class ContactCard extends StatelessWidget {
               ],
             ),
             const Expanded(child: SizedBox()),
-            Container(
-              decoration: const BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.all(Radius.circular(5))),
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.edit,
-                  color: Colors.white,
+            GestureDetector(
+              onTap: () {
+                nameController.text = name;
+                numberController.text = phoneNumber;
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        content: Stack(
+                          clipBehavior: Clip.none,
+                          children: <Widget>[
+                            Positioned(
+                              right: -40.0,
+                              top: -40.0,
+                              child: InkResponse(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const CircleAvatar(
+                                  backgroundColor: Colors.red,
+                                  child: Icon(Icons.close),
+                                ),
+                              ),
+                            ),
+                            Form(
+                              key: _formKey,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: TextFormField(
+                                      controller: nameController,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Name',
+                                        icon: Icon(Icons.account_box),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: TextFormField(
+                                      controller: numberController,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Contact Number',
+                                        icon: Icon(Icons.call),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ElevatedButton(
+                                      child: const Text("Save"),
+                                      onPressed: () {
+                                        editContact(
+                                            index: index,
+                                            name: nameController.text,
+                                            number: numberController.text);
+
+                                        _formKey.currentState!.reset();
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    });
+              },
+              child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.all(Radius.circular(5))),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
