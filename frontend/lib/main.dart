@@ -30,6 +30,11 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
 
+  deleteContact({required int index}) {
+    contactList.removeAt(index);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,32 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         textStyle: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold)),
                     onPressed: () {
-                      // contactList.add({
-                      //   'name': 'Siddharth Bisht',
-                      //   'phoneNumber': 159236478
-                      // });
-                      // setState(() {});
-                      // showDialog(
-                      //     context: context,
-                      //     builder: (BuildContext context) => AlertDialog(
-                      //           title: const Text('Add Contact'),
-                      //           content: Column(
-                      //             mainAxisSize: MainAxisSize.min,
-                      //             crossAxisAlignment: CrossAxisAlignment.start,
-                      //             children: const [
-                      //               Text("Hello"),
-                      //             ],
-                      //           ),
-                      //           actions: <Widget>[
-                      //              FlatButton(
-                      //               onPressed: () {
-                      //                 Navigator.of(context).pop();
-                      //               },
-                      //               textColor: Theme.of(context).primaryColor,
-                      //               child: const Text('Close'),
-                      //             ),
-                      //           ],
-                      //         ));
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -200,6 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
                 child: ContactBox(
               contactList: contactList,
+              deleteContact: deleteContact,
             )),
           ],
         ),
@@ -210,10 +190,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class ContactBox extends StatefulWidget {
   final List contactList;
-  const ContactBox({
-    Key? key,
-    required this.contactList,
-  }) : super(key: key);
+  final Function deleteContact;
+  const ContactBox(
+      {Key? key, required this.contactList, required this.deleteContact})
+      : super(key: key);
 
   @override
   State<ContactBox> createState() => _ContactBoxState();
@@ -239,6 +219,8 @@ class _ContactBoxState extends State<ContactBox> {
                     phoneNumber: data['phoneNumber'],
                     isFirst: index == 0,
                     isLast: index == widget.contactList.length - 1,
+                    index: index,
+                    deleteContact: widget.deleteContact,
                   );
                 }),
             //  Column(
@@ -255,12 +237,16 @@ class ContactCard extends StatelessWidget {
   final String phoneNumber;
   final bool isFirst;
   final bool isLast;
+  final Function deleteContact;
+  final int index;
   const ContactCard({
     Key? key,
     required this.name,
     required this.phoneNumber,
     required this.isFirst,
     required this.isLast,
+    required this.index,
+    required this.deleteContact,
   }) : super(key: key);
 
   @override
@@ -335,15 +321,20 @@ class ContactCard extends StatelessWidget {
             const SizedBox(
               width: 10,
             ),
-            Container(
-              decoration: const BoxDecoration(
-                  color: Colors.redAccent,
-                  borderRadius: BorderRadius.all(Radius.circular(5))),
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.delete,
-                  color: Colors.white,
+            GestureDetector(
+              onTap: () {
+                deleteContact(index: index);
+              },
+              child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.redAccent,
+                    borderRadius: BorderRadius.all(Radius.circular(5))),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
