@@ -17,8 +17,18 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  List contactList = [];
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController numberController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +76,106 @@ class MyHomePage extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                         textStyle: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold)),
-                    onPressed: () {},
+                    onPressed: () {
+                      // contactList.add({
+                      //   'name': 'Siddharth Bisht',
+                      //   'phoneNumber': 159236478
+                      // });
+                      // setState(() {});
+                      // showDialog(
+                      //     context: context,
+                      //     builder: (BuildContext context) => AlertDialog(
+                      //           title: const Text('Add Contact'),
+                      //           content: Column(
+                      //             mainAxisSize: MainAxisSize.min,
+                      //             crossAxisAlignment: CrossAxisAlignment.start,
+                      //             children: const [
+                      //               Text("Hello"),
+                      //             ],
+                      //           ),
+                      //           actions: <Widget>[
+                      //              FlatButton(
+                      //               onPressed: () {
+                      //                 Navigator.of(context).pop();
+                      //               },
+                      //               textColor: Theme.of(context).primaryColor,
+                      //               child: const Text('Close'),
+                      //             ),
+                      //           ],
+                      //         ));
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Stack(
+                                clipBehavior: Clip.none,
+                                children: <Widget>[
+                                  Positioned(
+                                    right: -40.0,
+                                    top: -40.0,
+                                    child: InkResponse(
+                                      onTap: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const CircleAvatar(
+                                        backgroundColor: Colors.red,
+                                        child: Icon(Icons.close),
+                                      ),
+                                    ),
+                                  ),
+                                  Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: TextFormField(
+                                            controller: nameController,
+                                            decoration: const InputDecoration(
+                                              labelText: 'Name',
+                                              icon: Icon(Icons.account_box),
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: TextFormField(
+                                            controller: numberController,
+                                            decoration: const InputDecoration(
+                                              labelText: 'Contact Number',
+                                              icon: Icon(Icons.call),
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: ElevatedButton(
+                                            child: const Text("Save"),
+                                            onPressed: () {
+                                              contactList.add({
+                                                'name': nameController.text,
+                                                'phoneNumber':
+                                                    numberController.text
+                                              });
+                                              // contactList.sort();
+                                              contactList.sort((a, b) =>
+                                                  a['name']
+                                                      .compareTo(b['name']));
+
+                                              setState(() {});
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          });
+                    },
                     child: Row(children: const [
                       Icon(Icons.add),
                       Text(
@@ -88,7 +197,10 @@ class MyHomePage extends StatelessWidget {
             const SizedBox(
               height: 30,
             ),
-            const Expanded(child: ContactBox()),
+            Expanded(
+                child: ContactBox(
+              contactList: contactList,
+            )),
           ],
         ),
       ),
@@ -96,28 +208,60 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class ContactBox extends StatelessWidget {
-  const ContactBox({Key? key}) : super(key: key);
+class ContactBox extends StatefulWidget {
+  final List contactList;
+  const ContactBox({
+    Key? key,
+    required this.contactList,
+  }) : super(key: key);
 
   @override
+  State<ContactBox> createState() => _ContactBoxState();
+}
+
+class _ContactBoxState extends State<ContactBox> {
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.black38,
-          ),
-          borderRadius: const BorderRadius.all(Radius.circular(5))),
-      child: Column(
-        children: const [
-          ContactCard(),
-        ],
-      ),
-    );
+    return widget.contactList.isEmpty
+        ? const Center(child: Text('No contacts to show. Add some.'))
+        : Container(
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black38,
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(5))),
+            child: ListView.builder(
+                itemCount: widget.contactList.length,
+                itemBuilder: (context, index) {
+                  final data = widget.contactList[index];
+                  return ContactCard(
+                    name: data['name'],
+                    phoneNumber: data['phoneNumber'],
+                    isFirst: index == 0,
+                    isLast: index == widget.contactList.length - 1,
+                  );
+                }),
+            //  Column(
+            //   children: const [
+            //     ContactCard(),
+            //   ],
+            // ),
+          );
   }
 }
 
 class ContactCard extends StatelessWidget {
-  const ContactCard({Key? key}) : super(key: key);
+  final String name;
+  final String phoneNumber;
+  final bool isFirst;
+  final bool isLast;
+  const ContactCard({
+    Key? key,
+    required this.name,
+    required this.phoneNumber,
+    required this.isFirst,
+    required this.isLast,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -126,21 +270,27 @@ class ContactCard extends StatelessWidget {
           border: Border.all(
             color: Colors.black38,
           ),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(5),
-            topRight: Radius.circular(5),
+          borderRadius: BorderRadius.only(
+            topLeft:
+                isFirst ? const Radius.circular(5) : const Radius.circular(0),
+            topRight:
+                isFirst ? const Radius.circular(5) : const Radius.circular(0),
+            bottomLeft:
+                isLast ? const Radius.circular(5) : const Radius.circular(0),
+            bottomRight:
+                isLast ? const Radius.circular(5) : const Radius.circular(0),
           )),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Steve Jobs',
-                  style: TextStyle(
+                Text(
+                  name,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -149,18 +299,18 @@ class ContactCard extends StatelessWidget {
                   height: 5,
                 ),
                 Row(
-                  children: const [
-                    Icon(
+                  children: [
+                    const Icon(
                       Icons.phone,
                       color: Colors.grey,
                       size: 15,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     Text(
-                      '227591961',
-                      style: TextStyle(
+                      phoneNumber,
+                      style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Colors.grey),
@@ -168,6 +318,22 @@ class ContactCard extends StatelessWidget {
                   ],
                 ),
               ],
+            ),
+            const Expanded(child: SizedBox()),
+            Container(
+              decoration: const BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 10,
             ),
             Container(
               decoration: const BoxDecoration(
@@ -180,7 +346,7 @@ class ContactCard extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
