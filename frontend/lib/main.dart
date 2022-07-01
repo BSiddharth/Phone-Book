@@ -143,6 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       .compareTo(b['name']));
 
                                               setState(() {});
+                                              _formKey.currentState!.reset();
                                               Navigator.pop(context);
                                             },
                                           ),
