@@ -1,9 +1,9 @@
 import 'dart:math';
 
-const fakeData = [
-  {'name': 'Aakash', 'phoneNumber': 987654321},
-  {'name': 'Mukul', 'phoneNumber': 963852741},
-  {'name': 'Shlok', 'phoneNumber': 741852963}
+var fakeData = [
+  {'name': 'Aakash', 'phoneNumber': '987654321'},
+  {'name': 'Mukul', 'phoneNumber': '963852741'},
+  {'name': 'Shlok', 'phoneNumber': '741852963'}
 ];
 
 fakeRepo() {

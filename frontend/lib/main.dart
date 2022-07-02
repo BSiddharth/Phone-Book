@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:phone_book/fakeRepo.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+enum LoadingState { loading, failed, completed }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -29,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
-
+  LoadingState currentState = LoadingState.loading;
   deleteContact({required int index}) {
     contactList.removeAt(index);
     setState(() {});
@@ -39,6 +42,23 @@ class _MyHomePageState extends State<MyHomePage> {
       {required int index, required String name, required String number}) {
     contactList[index] = {'name': name, 'phoneNumber': number};
     setState(() {});
+  }
+
+  loadRepo() async {
+    try {
+      contactList = await fakeRepo();
+      currentState = LoadingState.completed;
+    } catch (e) {
+      currentState = LoadingState.failed;
+    }
+
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadRepo();
   }
 
   @override
@@ -183,12 +203,29 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(
               height: 30,
             ),
-            Expanded(
-                child: ContactBox(
-              contactList: contactList,
-              deleteContact: deleteContact,
-              editContact: editContact,
-            )),
+            currentState == LoadingState.completed
+                ? Expanded(
+                    child: ContactBox(
+                    contactList: contactList,
+                    deleteContact: deleteContact,
+                    editContact: editContact,
+                  ))
+                : currentState == LoadingState.loading
+                    ? const Expanded(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    : Expanded(
+                        child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.error, color: Colors.redAccent),
+                            Text('Data could not be loaded!')
+                          ],
+                        ),
+                      )),
           ],
         ),
       ),
