@@ -46,11 +46,19 @@ def delete():
     db.session.delete(toDelete)
     db.session.commit()
     return '',200
-    
+
 @app.route("/edit", methods=['POST'])
 def edit():
-    # edit a contact from the database
-    pass
+    name = request.form['name']
+    number = request.form['number']
+    uid = request.form['uid']
+    toEdit = Contact.query.filter_by(uid=uid).first()
+    toEdit.name = name
+    toEdit.number = number
+    db.session.commit()
+    return '',200
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
