@@ -26,7 +26,7 @@ def contacts():
     data = {}
     for x in Contact.query.all():
         data[x.name] = x.number
-    return jsonify(data),200
+    return jsonify(data),200 
 
 @app.route("/add", methods=['POST'])
 def add():
