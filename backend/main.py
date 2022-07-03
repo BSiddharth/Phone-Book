@@ -1,4 +1,5 @@
 from flask import Flask, jsonify,request
+from flask_cors import cross_origin
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -22,14 +23,19 @@ class Contact(db.Model):
 db.create_all()
 
 @app.route("/contacts", methods=['POST'])
+@cross_origin()
 def contacts():
-    data = {}
+    response = []
     for x in Contact.query.all():
-        data[x.name] = x.number
-    
-    return jsonify(data),200 
+        data = {}
+        data['number'] = str(x.number)
+        data['name'] = str(x.name)
+        data['uid'] = str(x.uid)
+        response.append(data)
+    return jsonify(response),200 
 
 @app.route("/add", methods=['POST'])
+@cross_origin()
 def add():
     name = request.form['name']
     number = request.form['number']
@@ -40,6 +46,7 @@ def add():
     return '',200
 
 @app.route("/delete", methods=['POST'])
+@cross_origin()
 def delete():
     uid = request.form['uid']
     toDelete = Contact.query.filter_by(uid=uid).first()
@@ -48,6 +55,7 @@ def delete():
     return '',200
 
 @app.route("/edit", methods=['POST'])
+@cross_origin()
 def edit():
     name = request.form['name']
     number = request.form['number']

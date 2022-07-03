@@ -1,5 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:phone_book/fakeRepo.dart';
+import 'package:phone_book/backend_api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,21 +46,22 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  loadRepo() async {
+  loadContacts() async {
     try {
-      contactList = await fakeRepo();
+      var res = await getContacts();
+      contactList = jsonDecode(res.body);
+      print(contactList);
       currentState = LoadingState.completed;
     } catch (e) {
       currentState = LoadingState.failed;
     }
-
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    loadRepo();
+    loadContacts();
   }
 
   @override
@@ -220,7 +223,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
+                          children: const [
                             Icon(Icons.error, color: Colors.redAccent),
                             Text('Data could not be loaded!')
                           ],
@@ -265,7 +268,7 @@ class _ContactBoxState extends State<ContactBox> {
                   final data = widget.contactList[index];
                   return ContactCard(
                     name: data['name'],
-                    phoneNumber: data['phoneNumber'],
+                    phoneNumber: data['number'],
                     isFirst: index == 0,
                     isLast: index == widget.contactList.length - 1,
                     index: index,
@@ -273,11 +276,6 @@ class _ContactBoxState extends State<ContactBox> {
                     editContact: widget.editContact,
                   );
                 }),
-            //  Column(
-            //   children: const [
-            //     ContactCard(),
-            //   ],
-            // ),
           );
   }
 }
