@@ -5,9 +5,9 @@ Phone Book is a simple web application developed to test flutter web. It stores 
 ## Screenshots
 
 <p float = 'middle'>
-<img src='screenshots/ss1.jpg' height='500px'/>
-<img src='screenshots/ss2.jpg' height='500px'/>
-<img src='screenshots/ss3.jpg' height='500px'/>
+<img src='screenshots/ss1.jpeg' height='500px'/>
+<img src='screenshots/ss2.jpeg' height='500px'/>
+<img src='screenshots/ss3.jpeg' height='500px'/>
 </p>
 
 ## License
