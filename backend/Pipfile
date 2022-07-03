@@ -5,7 +5,8 @@ name = "pypi"
 
 [packages]
 fastapi = {extras = ["all"], version = "*"}
-sqlalchemy = "*"
+flask = "*"
+flask-sqlalchemy = "*"
 
 [dev-packages]
 
