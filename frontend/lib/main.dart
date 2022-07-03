@@ -269,6 +269,7 @@ class _ContactBoxState extends State<ContactBox> {
                   return ContactCard(
                     name: data['name'],
                     phoneNumber: data['number'],
+                    uid: data['uid'],
                     isFirst: index == 0,
                     isLast: index == widget.contactList.length - 1,
                     index: index,
@@ -283,6 +284,7 @@ class _ContactBoxState extends State<ContactBox> {
 class ContactCard extends StatelessWidget {
   final String name;
   final String phoneNumber;
+  final String uid;
   final bool isFirst;
   final bool isLast;
   final Function deleteContact;
@@ -296,6 +298,7 @@ class ContactCard extends StatelessWidget {
     Key? key,
     required this.name,
     required this.phoneNumber,
+    required this.uid,
     required this.isFirst,
     required this.isLast,
     required this.index,
@@ -451,6 +454,7 @@ class ContactCard extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 deleteContact(index: index);
+                delete(uid: uid);
               },
               child: Container(
                 decoration: const BoxDecoration(
