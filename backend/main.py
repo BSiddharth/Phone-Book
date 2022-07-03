@@ -26,6 +26,7 @@ def contacts():
     data = {}
     for x in Contact.query.all():
         data[x.name] = x.number
+    
     return jsonify(data),200 
 
 @app.route("/add", methods=['POST'])
@@ -40,8 +41,11 @@ def add():
 
 @app.route("/delete", methods=['POST'])
 def delete():
-    # delete contact from the database
-    pass
+    uid = request.form['uid']
+    toDelete = Contact.query.filter_by(uid=uid).first()
+    db.session.delete(toDelete)
+    db.session.commit()
+    return '',200
     
 @app.route("/edit", methods=['POST'])
 def edit():
