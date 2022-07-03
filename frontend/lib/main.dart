@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:phone_book/backend_api.dart';
+import 'package:random_string/random_string.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,9 +41,13 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  editContact(
-      {required int index, required String name, required String number}) {
-    contactList[index] = {'name': name, 'phoneNumber': number};
+  editContact({
+    required int index,
+    required String name,
+    required String number,
+    required String uid,
+  }) {
+    contactList[index] = {'name': name, 'number': number, 'uid': uid};
     setState(() {});
   }
 
@@ -161,12 +166,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                           child: ElevatedButton(
                                             child: const Text("Save"),
                                             onPressed: () {
+                                              var randString = randomString(10);
                                               contactList.add({
                                                 'name': nameController.text,
-                                                'phoneNumber':
-                                                    numberController.text
+                                                'number': numberController.text,
+                                                'uid': randString
                                               });
-                                              // contactList.sort();
+                                              add(
+                                                  uid: randString,
+                                                  name: nameController.text,
+                                                  number:
+                                                      numberController.text);
                                               contactList.sort((a, b) =>
                                                   a['name']
                                                       .compareTo(b['name']));
@@ -419,6 +429,11 @@ class ContactCard extends StatelessWidget {
                                       onPressed: () {
                                         editContact(
                                             index: index,
+                                            name: nameController.text,
+                                            number: numberController.text,
+                                            uid: uid);
+                                        edit(
+                                            uid: uid,
                                             name: nameController.text,
                                             number: numberController.text);
 

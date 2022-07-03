@@ -24,44 +24,38 @@ Future<http.Response> delete({
   return response;
 }
 
-// Future<http.Response> getContacts({
-//   required String state,
-// }) async {
-//   Future<http.Response> response = http.delete(
-//     Uri.parse(
-//       '$kUrl/deleteUser/',
-//     ),
-//     body: {
-//       'state': state,
-//     },
-//   );
-//   return response;
-// }
+Future<http.Response> add({
+  required String uid,
+  required String name,
+  required String number,
+}) async {
+  Future<http.Response> response = http.post(
+    Uri.parse(
+      '$kUrl/add',
+    ),
+    body: {
+      'uid': uid,
+      'name': name,
+      'number': number,
+    },
+  );
+  return response;
+}
 
-// Future<http.Response> getContacts({
-//   required String state,
-// }) async {
-//   Future<http.Response> response = http.delete(
-//     Uri.parse(
-//       '$kUrl/deleteUser/',
-//     ),
-//     body: {
-//       'state': state,
-//     },
-//   );
-//   return response;
-// }
-
-// Future<http.Response> getContacts({
-//   required String state,
-// }) async {
-//   Future<http.Response> response = http.delete(
-//     Uri.parse(
-//       '$kUrl/deleteUser/',
-//     ),
-//     body: {
-//       'state': state,
-//     },
-//   );
-//   return response;
-// }
+Future<http.Response> edit({
+  required String uid,
+  required String name,
+  required String number,
+}) async {
+  Future<http.Response> response = http.post(
+    Uri.parse(
+      '$kUrl/edit',
+    ),
+    body: {
+      'uid': uid,
+      'name': name,
+      'number': number,
+    },
+  );
+  return response;
+}
